@@ -5,12 +5,13 @@ import argparse
 from convert import html_to_numpy
 from grading import table_similarity
 import polars as pl
+from pathlib import Path
 
 from providers.config import settings
 
 
 def main(model: str, folder: str, save_to_csv: bool):
-    groundtruth = settings.input_dir / "groundtruth"
+    groundtruth = str(Path(settings.input_dir).parent / "groundtruth")
     scores = []
 
     html_files = glob.glob(os.path.join(folder, "*.html"))
@@ -45,6 +46,7 @@ def main(model: str, folder: str, save_to_csv: bool):
 
     score_dicts = [{"filename": fname, "score": scr} for fname, scr in scores]
     df = pl.DataFrame(score_dicts)
+    print(df)
     print(
         f"Average score for {model}: {df['score'].mean():.2f} with std {df['score'].std():.2f}"
     )
@@ -58,6 +60,6 @@ if __name__ == "__main__":
     parser.add_argument("--save-to-csv", type=bool, default=True)
     args = parser.parse_args()
 
-    model_dir = settings.output_dir / f"{args.model}-raw"
+    model_dir = settings.output_dir / f"{args.model}"
     assert model_dir.exists(), f"Model directory {model_dir} does not exist"
     main(args.model, model_dir, args.save_to_csv)

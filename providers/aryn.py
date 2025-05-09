@@ -25,17 +25,19 @@ def write_table_html(root_dir: Path, doc: Document) -> Document:
 
 
 def main():
-    output_root = output_dir / datetime.now().isoformat()
+    now = datetime.now().isoformat()
+    output_root = output_dir / now
     output_root.mkdir()
     print(f"Outputting to {str(output_root)}")
     ctx = sycamore.init()
 
     ds = ctx.read.binary(paths = str(input_dir), binary_format = "pdf")
-    ds = ds.partition(ArynPartitioner(extract_table_structure=True))
+    ds = ds.partition(ArynPartitioner(extract_table_structure=True, use_ocr=True, text_mode="vision_ocr"))
     ds = ds.spread_properties(['path']).explode()
     ds = ds.filter(lambda d: d.type == "table")
     ds = ds.map(partial(write_table_html, output_root))
     ds.execute()
+    print(f"Now run `uv run python -m grade_cli --model {now}`")
 
 
 if __name__ == "__main__":
