@@ -32,8 +32,9 @@ def main():
 
     ds = ctx.read.binary(paths = str(input_dir), binary_format = "pdf")
     ds = ds.partition(ArynPartitioner(extract_table_structure=True))
-    ds = ds.spread_properties(['path']).explode().filter(lambda d: d.type == "table")
-    ds.map(partial(write_table_html, output_root))
+    ds = ds.spread_properties(['path']).explode()
+    ds = ds.filter(lambda d: d.type == "table")
+    ds = ds.map(partial(write_table_html, output_root))
     ds.execute()
 
 
