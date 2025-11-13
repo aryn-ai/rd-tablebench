@@ -131,6 +131,12 @@ def table_similarity(
     similarity: similarity score between 0 and 1
     """
 
+    # Handle empty tables
+    if ground_truth.size == 0 or prediction.size == 0:
+        if ground_truth.size == 0 and prediction.size == 0:
+            return 1.0  # Both empty, perfect match
+        return 0.0  # One empty, one not - no match
+
     # Remove newlines and normalize whitespace in cells
     def normalize_cell(cell: str) -> str:
         return "".join(cell.replace("\n", " ").replace("-", "").split()).replace(

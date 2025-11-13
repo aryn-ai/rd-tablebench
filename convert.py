@@ -4,7 +4,16 @@ from lxml import etree
 
 
 def html_to_numpy(html_string: str) -> npt.NDArray[np.str_]:
+    # Handle empty or invalid HTML
+    if not html_string or not html_string.strip():
+        return np.array([]).reshape(0, 0).astype(np.str_)
+
     dom_tree = etree.HTML(html_string, parser=etree.HTMLParser())
+
+    # Handle case where parsing failed
+    if dom_tree is None:
+        return np.array([]).reshape(0, 0).astype(np.str_)
+
     table_rows: list[list[str]] = []
     span_info: dict[int, tuple[str, int]] = {}
 
