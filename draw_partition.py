@@ -22,9 +22,9 @@ for partition_json_path in PARTITIONED_DIR.glob("*.json"):
     try:
         pdf_file = partition_json_path.stem
         pdf_path = PDF_DIR / pdf_file
-        
+
         pages = draw_with_boxes(str(pdf_path), data, draw_table_cells=True)
-        
+
         img_output_file = str(OUTPUT_DIR / pdf_file)
         img_output_file += ".png"
         for i, img in enumerate(pages):

@@ -62,4 +62,4 @@ if __name__ == "__main__":
 
     model_dir = settings.output_dir / f"{args.model}"
     assert model_dir.exists(), f"Model directory {model_dir} does not exist"
-    main(args.model, model_dir, args.save_to_csv)
+    main(args.model, str(model_dir), args.save_to_csv)

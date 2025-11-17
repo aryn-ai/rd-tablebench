@@ -62,7 +62,7 @@ async def poll_task(
                 if response.status == 200:
                     task_info = await response.json()
                     if task_info["status"] == "Succeeded":
-                        return task_info
+                        return dict(task_info)
                     elif task_info["status"] in ["Failed", "Canceled"]:
                         return {"error": f"Task failed or canceled: {task_info}"}
                 else:
