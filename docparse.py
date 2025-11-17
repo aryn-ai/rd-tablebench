@@ -74,8 +74,8 @@ def process_pdf(pdf_file, pdf_path, output_path, language, tasks_file):
             aryn_api_key=ARYN_API_KEY,
         )
 
-        with open(tasks_file, "a", newline="") as f:
-            writer = csv.writer(f)
+        with open(tasks_file, "a", newline="") as task_file:
+            writer = csv.writer(task_file)
             writer.writerow([pdf_file, response["task_id"]])
 
 
