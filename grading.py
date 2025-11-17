@@ -245,4 +245,4 @@ def table_similarity(
 
     # Normalize the similarity score
     similarity = actual_total_score / total_possible_score
-    return max(0.0, min(similarity, 1.0))
+    return float(max(0.0, min(similarity, 1.0)))

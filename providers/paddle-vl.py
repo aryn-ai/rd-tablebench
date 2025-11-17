@@ -19,7 +19,6 @@ image = (
     modal.Image.debian_slim(python_version="3.12")
     .apt_install(
         "wget",
-        "libgomp1",
         # OpenGL libraries required by OpenCV
         "libgl1-mesa-glx",
         "libglib2.0-0",

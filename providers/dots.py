@@ -70,11 +70,9 @@ vllm_image = (
     image=vllm_image,
 )
 class VLLMServer:
-    """VLLM Server for DOTS OCR with optimal throughput configuration."""
 
     @modal.enter()
     def start_server(self):
-        """Start the VLLM server with optimal configuration."""
         import subprocess
         import threading
         import time
@@ -166,7 +164,8 @@ class VLLMServer:
                     print(f"✓ VLLM server is ready! (took {elapsed:.1f}s)")
                     print("=" * 80)
                     break
-            except Exception:
+            except Exception as e:
+                print(f"Error checking server health: {e}")
                 pass
             time.sleep(5)
         else:
@@ -178,7 +177,6 @@ class VLLMServer:
 
     @modal.exit()
     def stop_server(self):
-        """Stop the VLLM server."""
         if self.server_process:
             print("Stopping VLLM server...")
             self.server_process.terminate()
@@ -186,19 +184,8 @@ class VLLMServer:
             print("✓ Server stopped")
 
     def _process_single_image(
-        self, client, img_data: Dict, retry_count: int = 0
-    ) -> Dict:
-        """
-        Process a single image with retry logic.
-
-        Args:
-            client: OpenAI client instance
-            img_data: Dict with 'filename' and 'image_base64'
-            retry_count: Current retry attempt
-
-        Returns:
-            Dict with results including table HTML, processing time, and any errors
-        """
+        self, client, img_data: dict, retry_count: int = 0
+    ) -> dict:
         filename = img_data["filename"]
         image_b64 = img_data["image_base64"]
 
@@ -309,7 +296,8 @@ class VLLMServer:
             if isinstance(layout_data, dict) or isinstance(layout_data, list):
                 return self._convert_dots_layout_to_html(layout_data)
         except (json.JSONDecodeError, ValueError):
-            pass
+            print(f"Error parsing JSON: {content}")
+            return "<table></table>"
 
         # Look for existing HTML table tags
         table_match = re.search(
@@ -378,7 +366,6 @@ class VLLMServer:
         return "<table></table>"
 
     def _parse_table_element(self, table_element: Dict) -> str:
-        """Parse a table element from DOTS OCR layout."""
         # Look for cells, rows, or structured content
         if "cells" in table_element:
             return self._construct_table_from_cells(table_element["cells"])
@@ -387,7 +374,7 @@ class VLLMServer:
             return self._construct_table_from_rows(table_element["rows"])
 
         if "html" in table_element:
-            return table_element["html"]
+            return str(table_element["html"])
 
         if "text" in table_element:
             # Try to parse text as table
@@ -404,7 +391,7 @@ class VLLMServer:
         sorted_cells = sorted(cells, key=lambda c: (c.get("row", 0), c.get("col", 0)))
 
         # Group by rows
-        rows = {}
+        rows: dict[int, list[dict]] = {}
         for cell in sorted_cells:
             row_idx = cell.get("row", 0)
             if row_idx not in rows:
@@ -428,7 +415,7 @@ class VLLMServer:
 
         return f"<table>{''.join(html_rows)}</table>"
 
-    def _construct_table_from_rows(self, rows: List) -> str:
+    def _construct_table_from_rows(self, rows: list) -> str:
         """Construct HTML table from row list."""
         if not rows:
             return "<table></table>"
@@ -699,7 +686,7 @@ def load_all_pdfs(pdf_dir: str = "data/rd-tablebench/pdfs") -> List[Dict]:
             if current_pixels > MAX_PIXELS:
                 scale = (MAX_PIXELS / current_pixels) ** 0.5
                 new_size = (int(img.width * scale), int(img.height * scale))
-                img = img.resize(new_size, Image.LANCZOS)
+                img = img.resize(new_size, Image.Resampling.LANCZOS)
 
             # Convert to base64 PNG
             img_bytes = io.BytesIO()

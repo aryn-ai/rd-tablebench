@@ -85,3 +85,10 @@ dependencies = [
 
 [tool.uv.sources]
 sycamore-ai = { path = "../sycamore/lib/sycamore/", editable = true }
+
+[dependency-groups]
+dev = [
+    "lxml-stubs>=0.5.1",
+    "types-requests>=2.32.4.20250913",
+    "types-tqdm>=4.67.0.20250809",
+]

@@ -65,7 +65,7 @@ def process_tables(tables: list[Table], html_path: str, output_path: Path) -> No
 
     # Find best matching table
     ground_truth = Path(f"data/rd-tablebench/groundtruth/{html_path}")
-    best_score = -1
+    best_score = -1.0
     best_file = None
 
     for temp_file in temp_files:

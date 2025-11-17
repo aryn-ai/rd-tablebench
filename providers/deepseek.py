@@ -447,7 +447,7 @@ def load_all_pdfs(pdf_dir: str = "data/rd-tablebench/pdfs") -> List[Dict]:
             if current_pixels > MAX_PIXELS:
                 scale = (MAX_PIXELS / current_pixels) ** 0.5
                 new_size = (int(img.width * scale), int(img.height * scale))
-                img = img.resize(new_size, Image.LANCZOS)
+                img = img.resize(new_size, Image.Resampling.LANCZOS)
 
             # Convert to base64 PNG
             img_bytes = io.BytesIO()
