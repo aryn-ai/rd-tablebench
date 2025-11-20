@@ -32,6 +32,7 @@ dependencies = [
     "google-cloud-resource-manager==1.14.0",
     "google-cloud-storage==2.19.0",
     "google-crc32c==1.6.0",
+    "google-genai>=0.3.0",
     "google-generativeai==0.8.3",
     "google-resumable-media==2.7.2",
     "googleapis-common-protos==1.66.0",
