@@ -26,12 +26,39 @@ logger = logging.getLogger(__name__)
 MODEL_NAME = "gemini-3-pro-preview"
 
 # Standard table extraction prompt
-TABLE_EXTRACTION_PROMPT = (
-    "Convert the image to an HTML table. The output should begin with <table> "
-    "and end with </table>. Specify rowspan and colspan attributes when they "
-    "are greater than 1. Do not specify any other attributes. Only use table "
-    "related HTML tags, no additional formatting is required."
-)
+TABLE_EXTRACTION_PROMPT = """You are a specialized image table extraction engine. Your task is to identify and convert the table in the uploaded image into clean, structured HTML.
+
+EXTRACTION REQUIREMENTS:
+1. **Output Format**: Return ONLY the complete HTML table structure.
+   - Begin each table with `<table>`
+   - End each table with `</table>`
+   - Use `<tr>` for table rows
+   - Use `<th>` for header cells (first row or column headers)
+   - Use `<td>` for all data cells
+
+2. **Content Preservation**: 
+   - Reproduce cell content exactly as written (maintain spacing, punctuation, capitalization)
+   - Preserve numerical formatting (decimals, percentages, currency symbols)
+   - Keep empty cells as `<td></td>` or `<th></th>`
+   - Do not attempt to encode images
+
+3. **Structure Accuracy**:
+   - Apply `rowspan="n"` for cells spanning multiple rows
+   - Apply `colspan="n"` for cells spanning multiple columns
+   - Ensure spanning attributes create valid table structure
+   - Maintain consistent column count across all rows
+
+4. **Quality Standards**:
+   - Each image will contain exactly one table
+   - Do not add styling, classes, or additional HTML elements
+   - Do not include explanatory text or comments
+
+5. **Error Handling**:
+   - If text is unclear, use your best interpretation
+   - For partially visible tables, extract visible portions
+
+OUTPUT NOTHING EXCEPT the HTML table structure.
+"""
 
 # Initialize paths
 base_path = os.path.expanduser(settings.input_dir)
